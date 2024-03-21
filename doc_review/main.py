@@ -56,6 +56,13 @@ def create_hero(hero: Hero, session: Annotated[Session, Depends(get_session)]):
     
     return hero_1_to_add, hero_2_to_add, hero_3_to_add
 
+@app.put("/update_heroes")
+def update_heroes(session: Annotated[Session, Depends(get_session)]):
+    heroes = session.exec(select(Hero)).all()
+    for hero in heroes:
+        hero.name = "Hero"
+    session.commit()
+    return {"message": "Heroes updated successfully"}
 
 @app.delete("/delete_heroes")
 def delete_heroes(session: Annotated[Session, Depends(get_session)]):
