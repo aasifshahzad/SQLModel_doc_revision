@@ -96,15 +96,15 @@ def update_heroes(secret_name : str, hero_update : HeroUpdate, session: Annotate
             
 
 
-# @app.put("/update_heroes")
-# def update_heroes(session: Annotated[Session, Depends(get_session)]):
-#     heroes = session.exec(select(Hero)).all()
-#     for hero in heroes:
-#         hero.name = "Hero"
-#     session.commit()
-#     return {"message": "Heroes updated successfully"}
+@app.put("/update_heroes/{name}")
+def update_heroes(name : str, hero_update : HeroUpdate, session: Annotated[Session, Depends(get_session)]): 
+    full_update = session.exec(select(Hero).where(Hero.name == name)).first()
+    if not name:    
+        # return {"message": "Hero not found"}
+        raise HTTPException(status_code=404, detail="Hero not found")
+    
 
-# @app.delete("/delete_heroes")
+# @app.delete("/delete_heroes_all")
 # def delete_heroes(session: Annotated[Session, Depends(get_session)]):
 #     heroes = session.exec(select(Hero)).all()
 #     for hero in heroes:
