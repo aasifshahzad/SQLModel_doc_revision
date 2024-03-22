@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import SQLModel, create_engine
 from dotenv import load_dotenv, find_dotenv
 import os
 
