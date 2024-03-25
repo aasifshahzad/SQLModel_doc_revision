@@ -66,18 +66,10 @@ def create_hero(hero: Hero, session: Annotated[Session, Depends(get_session)]):
     return hero_to_add, "Hero added successfully"
 
 
-@app.delete("/delete_heroes/{name}")
-def delete_heroes(name : str , session: Annotated[Session, Depends(get_session)]):
-    hero = session.exec(select(Hero).where(Hero.name == name)).first()
-    session.delete(hero)
-    session.commit()
-    return {"message": "Hero deleted successfully"}
-
-
-@app.patch("/update_heroes/{secret_name}")
-def update_heroes(secret_name : str, hero_update : HeroUpdate, session: Annotated[Session, Depends(get_session)]):
-    hero_to_update = session.exec(select(Hero).where(Hero.secret_name == secret_name)).first()
-    if not secret_name:
+@app.patch("/update_heroes/{name}")
+def update_heroes(name : str, hero_update : HeroUpdate, session: Annotated[Session, Depends(get_session)]):
+    hero_to_update = session.exec(select(Hero).where(Hero.name == name)).first()
+    if not name:
         # return {"message": "Hero not found"}
         raise HTTPException(status_code=404, detail="Hero not found")
     print("Hero in database", hero_to_update)
@@ -93,25 +85,41 @@ def update_heroes(secret_name : str, hero_update : HeroUpdate, session: Annotate
     session.commit()
     session.refresh(hero_to_update)
     return hero_to_update, "Hero updated successfully"  
-            
 
-
-@app.put("/update_heroes/{name}")
-def update_heroes(name : str, hero_update : HeroUpdate, session: Annotated[Session, Depends(get_session)]): 
-    full_update = session.exec(select(Hero).where(Hero.name == name)).first()
-    if not name:    
-        # return {"message": "Hero not found"}
-        raise HTTPException(status_code=404, detail="Hero not found")
+# @app.put("/update_heroes/{name}")
+# def update_heroes(name : str, hero_update : HeroUpdate, session: Annotated[Session, Depends(get_session)]): 
+#     full_update = session.exec(select(Hero).where(Hero.name == name)).first()
+#     if not name:    
+#         # return {"message": "Hero not found"}
+#         raise HTTPException(status_code=404, detail="Hero not found")
+#     if full_update.name:
+#         full_update.name = hero_update.name
+#     if full_update.age:
+#         full_update.age = hero_update.age
+#     if full_update.location:
+#         full_update.location = hero_update.location
+#     if full_update.name:
+#         full_update.name = hero_update.name
     
-
-# @app.delete("/delete_heroes_all")
-# def delete_heroes(session: Annotated[Session, Depends(get_session)]):
-#     heroes = session.exec(select(Hero)).all()
-#     for hero in heroes:
-#         session.delete(hero)
+#     session.add(full_update)
 #     session.commit()
-#     return {"message": "Heroes deleted successfully"}
+#     session.refresh(full_update)
+#     return full_update, "Hero updated successfully"
+    
+@app.delete("/delete_heroes_all")
+def delete_heroes(session: Annotated[Session, Depends(get_session)]):
+    heroes = session.exec(select(Hero)).all()
+    for hero in heroes:
+        session.delete(hero)
+    session.commit()
+    return {"message": "Heroes deleted successfully"}
 
+@app.delete("/delete_heroes/{name}")
+def delete_heroes(name : str , session: Annotated[Session, Depends(get_session)]):
+    hero = session.exec(select(Hero).where(Hero.name == name)).first()
+    session.delete(hero)
+    session.commit()
+    return {"message": "Hero deleted successfully"}
 
 
 
